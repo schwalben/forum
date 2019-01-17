@@ -2,6 +2,7 @@ extends layout
 
 block content
   //- actionで遷移先を指定する
+  p Message: #{message}
   form(method="post", action="/login")
     div
       input(type="text", name="userId")

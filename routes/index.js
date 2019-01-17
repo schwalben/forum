@@ -6,6 +6,7 @@ var Users = require('../models/user');
 /* GET home page. */
 router.get('/', function(req, res, next) {
   Post.findAll().then((posts) => {
+    // TODO: findByPKとか出来ないかな？ PK項目で検索してるのにfindAllはわかりにくい
     Users.findAll({where: {id: 'admin'}}).then((users) => {
       res.render('index', {
         title: 'Express',
