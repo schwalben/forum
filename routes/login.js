@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Users = require('../models/user');
+var Hash = require('../modules/passwordHash');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -10,12 +11,13 @@ router.get('/', function(req, res, next) {
 
 // 第一引数は、app.jsで定義したものが規定になる
 router.post('/', function(req, res, next) {
+    
     // postの場合、res.body内に贈られた値が入っている。
     // TODO: passwordのハッシュ＆ソルト＆ストレッチング
     // 試してみたが、 ' or 1=1'みたいな入力値はエスケープしてくれる
     Users.findAll({ where: {
         id: req.body.userId,
-        password: req.body.password
+        password: Hash.stretchingPassword(req.body.password, Hash.genSalt(16))
         }}).then((users) => {
             if (users.length != 1) {
                 return loginFailed(res);
