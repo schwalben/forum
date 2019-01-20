@@ -1,0 +1,14 @@
+extends layout
+
+block content
+
+  p #{message}
+  form(method="post", action="/users/register")
+    div
+      input(type="text", name="id")
+    div
+      input(type="text", name="name")
+    div
+      input(type="password", name="password")
+    div
+      button(type="submit") 登録

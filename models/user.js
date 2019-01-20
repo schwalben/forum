@@ -14,6 +14,9 @@ const Users = loader.database.define('Users', {
     },
     trackingCookie: {
       type: Sequelize.STRING
+    },
+    salt: {
+      type: Sequelize.STRING
     }
 }, {
       freezeTableName: true,

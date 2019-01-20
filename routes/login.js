@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var Users = require('../models/user');
 var Hash = require('../modules/passwordHash');
+var jwt = require( 'jsonwebtoken' );
+
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -11,19 +13,24 @@ router.get('/', function(req, res, next) {
 
 // 第一引数は、app.jsで定義したものが規定になる
 router.post('/', function(req, res, next) {
-    
+
+    // TODO: validation
+
     // postの場合、res.body内に贈られた値が入っている。
-    // TODO: passwordのハッシュ＆ソルト＆ストレッチング
     // 試してみたが、 ' or 1=1'みたいな入力値はエスケープしてくれる
-    Users.findAll({ where: {
+    Users.findOne({ where: {
         id: req.body.userId,
-        password: Hash.stretchingPassword(req.body.password, Hash.genSalt(16))
-        }}).then((users) => {
-            if (users.length != 1) {
+        }}).then((user) => {            
+            if (!user) {
                 return loginFailed(res);
             }
-            return loginSucceeded(res);
+            var hashedInputPassword = Hash.stretchingPassword(req.body.password, user.salt);
+            return user.password === hashedInputPassword ? loginSucceeded(req, res, {id: user.id, name: user.name}) : loginFailed(res);
     });
+
+
+
+    
 
 });
 
@@ -39,8 +46,13 @@ function loginFailed(res) {
     res.render('login', {message: 'LOGIN FAILED'});
 }
 
-function loginSucceeded(res) {
-    res.render('login', {message: 'LOGIN SUCCESS'});
+function loginSucceeded(req, res, user) {
+    var token = jwt.sign(user, 'hoge', {expiresIn: '24h'});
+    req.session.token = token;
+    console.log(token);
+    console.log(user);
+    console.log('sessionToken=' + req.session.token);
+    res.redirect('../');
 }
 
 module.exports = router;
