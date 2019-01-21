@@ -3,6 +3,7 @@ var router = express.Router();
 var Users = require('../models/user');
 var Hash = require('../modules/passwordHash');
 var jwt = require( 'jsonwebtoken' );
+var loginJWT = require('../modules/loginJWT');
 
 
 /* GET users listing. */
@@ -47,7 +48,7 @@ function loginFailed(res) {
 }
 
 function loginSucceeded(req, res, user) {
-    var token = jwt.sign(user, 'hoge', {expiresIn: '24h'});
+    var token = loginJWT.createLoginedToken(user);
     req.session.token = token;
     console.log(token);
     console.log(user);
