@@ -6,6 +6,7 @@ var jwt = require( 'jsonwebtoken' );
 var loginJWT = require('../modules/loginJWT');
 
 
+
 /* GET users listing. */
 router.get('/', function(req, res, next) {
   res.render('login');
@@ -16,7 +17,7 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
 
     // TODO: validation
-
+    console.log('post /login');
     // postの場合、res.body内に贈られた値が入っている。
     // 試してみたが、 ' or 1=1'みたいな入力値はエスケープしてくれる
     Users.findOne({ where: {
@@ -53,7 +54,7 @@ function loginSucceeded(req, res, user) {
     console.log(token);
     console.log(user);
     console.log('sessionToken=' + req.session.token);
-    res.redirect('../');
+    res.redirect('../posts');
 }
 
 module.exports = router;
