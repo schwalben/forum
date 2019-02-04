@@ -8,9 +8,11 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var postsRouter = require('./routes/posts');
+var searchPostsRouter = require('./routes/searchPosts');
 
 var app = express();
 
+// TODO: 環境変数化
 var secret = 'hoge'
 
 
@@ -42,6 +44,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
 app.use('/login', loginRouter);
+app.use('/searchPosts', searchPostsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

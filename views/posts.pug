@@ -6,6 +6,14 @@ block content
   p Welcome to #{title}
   h1 秘密の匿名掲示板
   a(href="/logout") ログアウト
+  h2 検索(部分一致)
+    form(method="get", action="/searchPosts")
+      div
+        input(type="text", name="searchCondition")
+      div
+        button(type="submit") 投稿
+
+
   h2 新規投稿
   form(method="post", action="/posts")
     div
@@ -16,6 +24,7 @@ block content
   each post in posts
     // pugに名前が変わった際にパラメータを埋め込む際の書き方が変わった
     a(href=`/posts/${post.id}/edit`) この投稿を編集する
+    a(href=`/posts/${post.id}/delete`) この投稿を削除する
     h3 #{post.id} : ID:#{post.trackingCookie}
     p #{post.content}
     p 投稿日時: #{post.createdAt}

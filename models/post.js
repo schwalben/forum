@@ -2,6 +2,7 @@
 
 const loader = require('./sequelize-loader');
 const Sequelize = loader.Sequelize;
+const Op = Sequelize.Op;
 
 const Post = loader.database.define('Post', {
   id: {

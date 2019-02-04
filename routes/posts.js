@@ -10,6 +10,7 @@ router.get('/', function(req, res, next) {
   console.log('/posts');
   Post.findAll().then((posts) => {
 
+    // セッションハイジャック
     var token = req.session.token;
     console.log('token=' + token);
 
@@ -53,7 +54,7 @@ router.get('/:postId/edit', function(req, res, next) {
     where: {id: req.params.postId}
   }).then((post) => {
     if (isMine(post.postedBy, decoded.id)) {
-      return  res.render('postEdit', {
+      res.render('postEdit', {
                 post: post,
                 userId: decoded.id
       });
@@ -63,6 +64,35 @@ router.get('/:postId/edit', function(req, res, next) {
     next(err);
   });
 });
+
+
+router.get('/:postId/delete', function(req, res, next) {
+  console.log('/:postId/delete');
+  var token = req.session.token;
+  if (!auth.isValidToken(token)) {
+    return res.redirect('../../login');
+  }
+  console.log('validToken');
+  var decoded = jwt.decode(token);
+  // 
+  console.log('postId' + req.params.id);
+  console.log(req.params);  
+  console.log(req.params.post);
+  Post.findOne({
+    where: {id: req.params.postId}
+  }).then((post) => {
+    if (isMine(post.postedBy, decoded.id)) {
+      Post.destroy({
+        where: {id: post.id}
+      });
+      res.redirect('/');
+    }
+    const err = new Error('指定された投稿がない、あるいは、削除する権限がありません');
+    err.status = 404;
+    next(err);
+  });
+});
+
 
 router.post('/:postId',  function(req, res, next)  {
 
@@ -95,6 +125,7 @@ router.post('/', function(req, res, next) {
     return res.redirect('../login');
   }
   var decoded = jwt.decode(token);
+  console.log('postedBy: ' + decoded.id);
   Post.create({
     content: req.body.content,
     postedBy: decoded.id
