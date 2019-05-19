@@ -20,9 +20,10 @@
     "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
     "pug": "2.0.0-beta11",
-    "sequelize": "^4.33.4"
-  },
-  "devDependencies": {
+    "sequelize": "^4.33.4",
     "express-session": "^1.15.6"
+  },
+  "engines": {
+    "node": "6.11.1"
   }
 }
