@@ -11,7 +11,7 @@ router.get('/', function(req, res, next) {
 
 
 router.get('/register', function(req, res, next) {
-  res.render('newmodels.User');
+  res.render('newUser');
 });
 
 
@@ -19,14 +19,14 @@ router.post('/register', function(req, res, next) {
 
   var salt = Hash.genSalt(20);
   var hashedInputPassword = Hash.stretchingPassword(req.body.password, salt);
-  User.create({
+  models.User.create({
     id: req.body.id,
     name: req.body.name,
     password: hashedInputPassword,
     salt: salt
   });
   
-  res.redirect('../index');
+  res.redirect('/');
 });
 
 
