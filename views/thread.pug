@@ -1,0 +1,23 @@
+extends layout
+
+block content
+
+  
+  form(method="get", action="/threads/new")
+    div(class="form-group")
+      button(type="submit" class="btn btn-default") スレッドを作成
+  
+
+  form(method="get", action="/threads" class="form-inline")
+    div(class="form-group")
+      input(type="text", name="searchCondition" class="form-control" placeholder="部分一致")
+      button(type="submit" class="btn btn-default") スレッド検索
+
+  div(class="panel panel-default")
+    div(class="panel-heading") スレッド一覧
+    div(class="list-group")
+      each thread in threads
+          a(href=`/thread/${thread.threadId}` class="list-group-item") 
+            p #{thread.title}
+            p 作成日時: #{thread.createdAt}
+      

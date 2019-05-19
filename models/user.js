@@ -1,5 +1,6 @@
 const loader = require('./sequelize-loader');
 const Sequelize = loader.Sequelize;
+const Post = require('./post');
 
 const Users = loader.database.define('Users', {
     id: {
@@ -22,5 +23,12 @@ const Users = loader.database.define('Users', {
       freezeTableName: true,
       timestamps: true
 });
-Users.sync();
+
+Users.associate = (models) => {
+  Users.hasMany(models.Post, {foreignKey: 'postedBy'});
+};
+
+
+
+// Users.sync();
 module.exports = Users;

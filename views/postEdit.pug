@@ -2,13 +2,20 @@ extends layout
 
 block content
 
-  h3 投稿の編集
-    form(method="post", action=`/posts/${post.id}?edit=1`)
-      div(class="form-group")
-        label(for="content") 予定名
-        textarea(id="content" class="form-control" name="content") #{post.content}
-      div
-        button(class="btn btn-info" type="submit") 以上の内容で投稿を編集する
-  h3 危険な変更
-  form(method="post", action="posts/#{post.id}?delete=1")
-    button(class="btn btn-danger" type="submit") この投稿   を削除する
+  div(class="panel panel-default")
+    div(class="panel-heading") 投稿内容の編集
+    div(class="panel-body") 
+      form(method="post" action=`/thread/${threadId}/${post.id}/edit`)
+        input(type="hidden" name="_csrf" value!=csrfToken)
+        div(class="form-group")
+          textarea(name="content" class="form-control" required) #{post.content}
+        div(class="form-group")
+          button(type="submit" class="btn btn-primary") 以上の内容で投稿を編集する
+      form(method="post", action=`/thread/${threadId}/${post.id}/delete`)
+        input(type="hidden" name="_csrf" value!=csrfToken)
+        button(class="btn btn-danger" type="submit") この投稿を削除する
+
+
+
+  
+  

@@ -2,16 +2,15 @@ extends layout
 
 block content
   //- actionで遷移先を指定する
-  p Message: #{message}
-  form(method="post", action="/login")
-    div
-      input(type="text", name="userId")
-    div
-      input(type="password", name="password")
-    div
-      button(type="submit") LOGIN
-  form(method="post", action="/login/test")
-    div
-      input(type="text", name="userId2")
-    div
-      button(type="submit") TEST
+  div(class="panel panel-default col-md-4 col-md-offset-4")
+    div(class="panel-body") 
+      form(method="post" action="/login" class="form-signin mb10")
+        if message
+          div(class="form-group")
+            Label #{message}
+        div(class="form-group")
+          input(type="text" name="userId" class="form-control" placeholder="ユーザID" required autofocus)
+        div(class="form-group")
+          input(type="password" name="password" class="form-control" placeholder="パスワード" required)
+        div(class="form-group")
+          button(type="submit" class="btn btn-lg btn-primary btn-block btn-signin") Login

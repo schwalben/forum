@@ -16,13 +16,33 @@ const Post = loader.database.define('Post', {
   postedBy: {
     type: Sequelize.STRING
   },
+  filePath: {
+    type: Sequelize.STRING
+  },
+  threadId: {
+    type: Sequelize.INTEGER
+  },
   trackingCookie: {
     type: Sequelize.STRING
   }
 }, {
     freezeTableName: true,
     timestamps: true
+});
+
+Post.associate = (models) => {
+  Post.belongsTo(models.User, {
+    foreignKey: 'postedBy', 
+    targetKey: 'id'
   });
+  Post.belongsTo(models.Thread, {
+    foreignKey: 'threadId', 
+    targetKey: 'threadId'
+  })
+
+};
+
+// Post.belongsTo(Users, {foreignKey: 'user_id'});
 
 Post.sync();
 module.exports = Post;

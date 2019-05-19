@@ -1,33 +1,44 @@
 extends layout
 
 block content
-  h1= title
-  p #{user.name} userName
-  p Welcome to #{title}
-  h1 秘密の匿名掲示板
-  a(href="/logout") ログアウト
-  h2 検索(部分一致)
-    form(method="get", action="/searchPosts")
-      div
-        input(type="text", name="searchCondition")
-      div
-        button(type="submit") 投稿
+
+  if user
+    div(class="panel panel-default")
+      div(class="panel-heading") 新規投稿
+      div(class="panel-body") 
+        form(method="post" action=`/thread/${threadId}`, enctype="multipart/form-data")
+          input(type="hidden" name="_csrf" value!=csrfToken)
+          div(class="form-group")
+            textarea(name="content" class="form-control" placeholder="投稿内容" required)
+          div(class="form-group") .jpg or .png
+            input(type="file" name="imageFile" class="btn btn-default")
+          div(class="form-group")
+            button(type="submit" class="btn btn-primary") 投稿
+
+  - var _searchCondition = searchCondition ? searchCondition : '';
+  form(method="get" action=`/thread/${threadId}/search` class="form-inline")
+    div(class="form-group")
+      input(type="text" name="searchCondition" class="form-control" placeholder="部分一致" value=`${_searchCondition}`)
+      button(type="submit" class="btn btn-default") 絞り込み
 
 
-  h2 新規投稿
-  form(method="post", action="/posts")
-    div
-      textarea(name="content", cols=40, rows=4)
-    div
-      button(type="submit") 投稿
-  h2 投稿一覧
-  each post in posts
-    // pugに名前が変わった際にパラメータを埋め込む際の書き方が変わった
-    a(href=`/posts/${post.id}/edit`) この投稿を編集する
-    a(href=`/posts/${post.id}/delete`) この投稿を削除する
-    h3 #{post.id} : ID:#{post.trackingCookie}
-    p #{post.content}
-    p 投稿日時: #{post.createdAt}
+
+  form(method="get" action=`/thread/${threadId}/export` class="form-inline")
+    input(type="hidden" name="exportCondition" value=`${_searchCondition}`)
+    button(type="submit" class="btn btn-default" onclick="getLocation()" ) エクスポート
+
+  div(class="panel panel-default")
+    div(class="panel-heading") 投稿一覧
+    ul(class="list-group")
+      each post, index in posts
+        li(class="list-group-item")
+          //- pugに名前が変わった際にパラメータを埋め込む際の書き方が変わった
+          if user && post.postedBy === user.id
+            a(href=`/thread/${threadId}/${post.id}/edit`) 編集  
+          p #{index + 1} : Posted by #{post.User.name}  #{post.formattedCreateAt}
+          p #{post.content}
+          if post.filePath
+            a(href=`/${post.filePath}`) 
+              img(src=`/${post.filePath}` class="img-responsive")
     
-    hr
     

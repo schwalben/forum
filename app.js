@@ -4,21 +4,25 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var session = require('express-session');
+var helmet = require('helmet');
+
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var postsRouter = require('./routes/posts');
 var searchPostsRouter = require('./routes/searchPosts');
+var threadRouter = require('./routes/threads');
+var logoutRouter = require('./routes/logout');
+
+
 
 var app = express();
-
-// TODO: 環境変数化
-var secret = 'hoge'
-
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+
+app.use(helmet());
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -26,8 +30,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+
 app.use(session({
-  secret: secret,
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: true,
   rolling: true,
@@ -42,24 +47,53 @@ app.use(session({
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/posts', postsRouter);
 app.use('/login', loginRouter);
+app.use('/logout', logoutRouter);
 app.use('/searchPosts', searchPostsRouter);
+app.use('/threads', threadRouter);
+app.use('/thread/:threadId', postsRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err,
+      user: req.session.user
+    });
+  });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+
+  console.log(err);
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    res.render('error', {
+      message: '選択したファイルのサイズが大きすぎます。',
+      error: {},
+      user: req.session.user
+    });  
+  } else {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: {},
+      user: req.session.user
+    });
+  }
+
 });
+
 
 module.exports = app;
