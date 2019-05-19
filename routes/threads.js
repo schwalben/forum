@@ -11,7 +11,7 @@ var asociateDefinition = require('../models/asociateDefinition');
 var models = asociateDefinition.models;
 var sequelize = asociateDefinition.sequelize;
 var url = require('url');
-
+const moment = require('moment-timezone');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
@@ -33,6 +33,10 @@ router.get('/', csrfProtection, function(req, res, next) {
                 ['createdAt', 'ASC']
             ]
         }).then((threads) => {
+            threads.forEach((thread) => {
+                thread.formattedCreatedAt = moment(thread.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+            });
+
             res.render('thread', {
                 threads: threads, 
                 user: req.session.user,
@@ -45,6 +49,9 @@ router.get('/', csrfProtection, function(req, res, next) {
                 ['createdAt', 'ASC']
             ]
         }).then(threads => {
+            threads.forEach((thread) => {
+                thread.formattedCreatedAt = moment(thread.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+            });
             res.render('thread', {
                 threads: threads, 
                 user: req.session.user,

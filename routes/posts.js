@@ -40,7 +40,7 @@ router.get('/', csrfProtection, function(req, res, next) {
     }]
   }).then((posts) => {
     posts.forEach(post => {
-      post.formattedCreateAt = moment(post.createAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+      post.formattedCreatedAt = moment(post.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
     });
     var token = req.session.token;
 
