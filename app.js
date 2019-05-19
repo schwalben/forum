@@ -10,7 +10,6 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var loginRouter = require('./routes/login');
 var postsRouter = require('./routes/posts');
-var searchPostsRouter = require('./routes/searchPosts');
 var threadRouter = require('./routes/threads');
 var logoutRouter = require('./routes/logout');
 
@@ -49,7 +48,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
-app.use('/searchPosts', searchPostsRouter);
 app.use('/threads', threadRouter);
 app.use('/thread/:threadId', postsRouter);
 
