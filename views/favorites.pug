@@ -1,0 +1,22 @@
+extends layout
+
+block content
+
+  div(class="panel panel-default")
+    div(class="panel-heading") お気に入り一覧
+    ul(class="list-group")
+      each favorite, index in favorites
+        li(class="list-group-item")
+          a(href=`/thread/${favorite.Post.threadId}` class="list-group-item") 
+            p 作成日時: #{favorite.Post.Thread.formattedCreatedAt} 
+            font(size="5") #{favorite.Post.Thread.title}
+          if user && favorite.Post.postedBy === user.id
+            a(href=`/thread/${favorite.Post.threadId}/${favorite.Post.id}/edit`) 編集  
+          button(class=`favorite-button btn-success`
+            data-user-id=`${user.id}`
+            data-post-id=`${favorite.Post.id}`) favorite
+          p Posted by #{favorite.Post.User.name}  #{favorite.Post.formattedCreatedAt}
+          p #{favorite.Post.content}
+          if favorite.Post.filePath
+            a(href=`/${favorite.Post.filePath}`) 
+              img(src=`/${favorite.Post.filePath}` class="img-responsive")

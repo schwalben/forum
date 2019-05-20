@@ -6,24 +6,33 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "bootstrap": "^4.0.0",
-    "cookie-parser": "~1.4.3",
-    "csurf": "^1.8.3",
+    "bootstrap": "^4.3.1",
+    "cookie-parser": "^1.4.4",
+    "csurf": "^1.10.0",
     "debug": "~2.6.9",
     "express": "~4.16.0",
-    "helmet": "^3.8.2",
+    "express-session": "^1.16.1",
+    "helmet": "^3.18.0",
     "http-errors": "~1.6.2",
-    "jsonwebtoken": "^8.4.0",
+    "jquery": "^3.4.1",
+    "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^2.2.0",
     "morgan": "~1.9.0",
     "multer": "^1.4.1",
-    "pg": "^7.4.1",
+    "pg": "^7.11.0",
     "pg-hstore": "^2.3.2",
+    "popper.js": "^1.14.0",
     "pug": "2.0.0-beta11",
-    "sequelize": "^4.33.4",
-    "express-session": "^1.15.6"
+    "sequelize": "^4.44.0"
   },
   "engines": {
     "node": "6.11.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.32.0",
+    "webpack-cli": "^3.3.2"
   }
 }

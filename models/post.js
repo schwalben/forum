@@ -38,7 +38,12 @@ Post.associate = (models) => {
   Post.belongsTo(models.Thread, {
     foreignKey: 'threadId', 
     targetKey: 'threadId'
-  })
+  });
+  
+  Post.hasMany(models.Favorite, {
+    foreignKey: 'postId'
+  });
+  
 
 };
 

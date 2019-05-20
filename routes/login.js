@@ -25,38 +25,38 @@ router.get('/', function(req, res, next) {
 // 第一引数は、app.jsで定義したものが規定になる
 router.post('/', function(req, res, next) {
 
-    // postの場合、res.body内に贈られた値が入っている。
-    // 試してみたが、 ' or 1=1'みたいな入力値はエスケープしてくれる
-    models.User.findOne({ where: {
-        id: req.body.userId,
-        }}).then((user) => {            
-            if (!user) {
-                return loginFailed(res);
-            }
-            var hashedInputPassword = Hash.stretchingPassword(req.body.password, user.salt);
-            return user.password === hashedInputPassword ? loginSucceeded(req, res, {id: user.id, name: user.name}) : loginFailed(res);
+  // postの場合、res.body内に贈られた値が入っている。
+  // 試してみたが、 ' or 1=1'みたいな入力値はエスケープしてくれる
+  models.User.findOne({ where: {
+    id: req.body.userId,
+    }}).then((user) => {            
+      if (!user) {
+        return loginFailed(res);
+      }
+      var hashedInputPassword = Hash.stretchingPassword(req.body.password, user.salt);
+      return user.password === hashedInputPassword ? loginSucceeded(req, res, {id: user.id, name: user.name}) : loginFailed(res);
     });
 });
 
 
 function loginFailed(res) {
-    res.render('login', {message: 'ユーザID、またはパスワードが誤っています。'});
+  res.render('login', {message: 'ユーザID、またはパスワードが誤っています。'});
 }
 
 function loginSucceeded(req, res, user) {
-    var token = loginJWT.createLoginedToken(user);
-    req.session.token = token;
-    req.session.user = {name: user.name};
+  var token = loginJWT.createLoginedToken(user);
+  req.session.token = token;
+  req.session.user = {id: user.id, name: user.name};
 
-    var loginFrom = req.cookies.loginFrom;
-    if (loginFrom &&
-        !loginFrom.includes('http://') &&
-        !loginFrom.includes('https://')) {
-        res.clearCookie('loginFrom');
-        res.redirect(loginFrom);
-    } else {
-        res.redirect('/threads');
-    }
+  var loginFrom = req.cookies.loginFrom;
+  if (loginFrom &&
+    !loginFrom.includes('http://') &&
+    !loginFrom.includes('https://')) {
+    res.clearCookie('loginFrom');
+    res.redirect(loginFrom);
+  } else {
+    res.redirect('/threads');
+  }
 }
 
 module.exports = router;

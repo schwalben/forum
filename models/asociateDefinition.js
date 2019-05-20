@@ -12,6 +12,7 @@ const models = {};
 models.User = require('./user');
 models.Post = require('./post');
 models.Thread = require('./thread');
+models.Favorite = require('./favorite');
 
 Object.keys(models).forEach((key) => {
     const model = models[key];

@@ -26,6 +26,9 @@ const moment = require('moment-timezone');
 router.get('/', csrfProtection, function(req, res, next) {  
   var threadId = urlParser.getThreadId(req.originalUrl);
 
+  var sessionUser = req.session.user
+  var userId = sessionUser ? jwt.decode(req.session.token).id : null;
+
   models.Post.findAll({
     where: {
       threadId: threadId
@@ -33,17 +36,22 @@ router.get('/', csrfProtection, function(req, res, next) {
     order: [
       ['createdAt', 'ASC']
     ], 
-    include: [{
-      model: 
-        models.User, 
-        required: false
-    }]
+    include: [
+    {
+      model: models.User, 
+      required: false
+    }, {
+      model: models.Favorite,
+      required: false,
+      where: {userId: userId}
+    }
+  ]
   }).then((posts) => {
     posts.forEach(post => {
       post.formattedCreatedAt = moment(post.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
     });
+    
     var token = req.session.token;
-
     if (!auth.isValidToken(token)) {
       res.render('posts', {
         posts: posts,

@@ -1,18 +1,18 @@
 var createError = require('http-errors');
 var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var session = require('express-session');
-var helmet = require('helmet');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const session = require('express-session');
+const helmet = require('helmet');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var loginRouter = require('./routes/login');
-var postsRouter = require('./routes/posts');
-var threadRouter = require('./routes/threads');
-var logoutRouter = require('./routes/logout');
-
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const loginRouter = require('./routes/login');
+const postsRouter = require('./routes/posts');
+const threadRouter = require('./routes/threads');
+const logoutRouter = require('./routes/logout');
+const favoriteRouter = require('./routes/favorites');
 
 
 var app = express();
@@ -50,6 +50,7 @@ app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/threads', threadRouter);
 app.use('/thread/:threadId', postsRouter);
+app.use('/favorites', favoriteRouter);
 
 
 // catch 404 and forward to error handler

@@ -16,7 +16,7 @@ html
         ul(class="nav navbar-nav navbar-right")
           if user
             li 
-              a #{user.name}
+              a(href=`/favorites/users/${user.id}`) #{user.name}
           li
             if user
               a(href="/logout") ログアウト
@@ -25,3 +25,4 @@ html
 
     div.container
       block content
+      script(src="/javascripts/bundle.js")

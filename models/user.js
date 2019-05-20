@@ -26,9 +26,10 @@ const Users = loader.database.define('Users', {
 
 Users.associate = (models) => {
   Users.hasMany(models.Post, {foreignKey: 'postedBy'});
+  Users.hasMany(models.Favorite, {foreignKey: 'userId'});
 };
 
 
 
-// Users.sync();
+Users.sync();
 module.exports = Users;

@@ -35,10 +35,14 @@ block content
           //- pugに名前が変わった際にパラメータを埋め込む際の書き方が変わった
           if user && post.postedBy === user.id
             a(href=`/thread/${threadId}/${post.id}/edit`) 編集  
+          if user
+            -var btnColor = post.Favorites.length > 0 ? 'btn-success' : 'btn-default'
+            button(class=`favorite-button ${btnColor}`
+              data-user-id=`${user.id}`
+              data-post-id=`${post.id}`) favorite
           p #{index + 1} : Posted by #{post.User.name}  #{post.formattedCreatedAt}
           p #{post.content}
           if post.filePath
             a(href=`/${post.filePath}`) 
               img(src=`/${post.filePath}` class="img-responsive")
-    
-    
+
