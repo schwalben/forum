@@ -50,7 +50,7 @@ router.get('/', csrfProtection, function(req, res, next) {
     posts.forEach(post => {
       post.formattedCreatedAt = moment(post.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
     });
-    
+
     var token = req.session.token;
     if (!auth.isValidToken(token)) {
       res.render('posts', {
@@ -187,7 +187,7 @@ router.get('/:postId/edit', csrfProtection, function(req, res, next) {
       });
     } else {
       const err = new Error('指定された投稿がない、あるいは、編集する権限がありません');
-      err.status = 500;
+      err.status = 403;
       return next(err);
   
     }
