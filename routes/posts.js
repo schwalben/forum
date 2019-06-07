@@ -29,12 +29,6 @@ router.get('/', csrfProtection, function(req, res, next) {
   const sessionUser = req.session.user
   const userId = sessionUser ? jwt.decode(req.session.token).id : null;
 
-  sequelize.query('SELECT * FROM "Post" p inner join "Users" u  on p."postedBy" = u."id" WHERE p."id" is not ?',
-    { replacements: [null], type: sequelize.QueryTypes.SELECT }
-  ).then(projects => {
-    console.log(projects)
-  });
-
   models.Post.findAll({
     where: {
       threadId: threadId
@@ -70,6 +64,9 @@ router.get('/search', csrfProtection, function(req, res) {
   const threadId = urlParser.getThreadId(req.originalUrl);
   const parsedUrl = url.parse(req.url, true);
   const query = parsedUrl.query;
+  
+  const sessionUser = req.session.user
+  const userId = sessionUser ? jwt.decode(req.session.token).id : null;
 
   if (!query.searchCondition) {
     return res.redirect('./');
@@ -84,11 +81,14 @@ router.get('/search', csrfProtection, function(req, res) {
     }, 
     order: [
       ['createdAt', 'ASC']
-    ],  
+    ], 
     include: [{
-      model: 
-        models.User, 
-        required: false
+      model: models.User, 
+      required: false
+    }, {
+      model: models.Favorite,
+      required: false,
+      where: {userId: userId}
     }]
   }).then((posts) => {
       return res.render('posts', {
