@@ -10,7 +10,7 @@ block content
         div(class="form-group")
           textarea(name="content" class="form-control" required) #{post.content}
         div(class="form-group") .jpg or .png
-          input(type="file" name="imageFile" class="btn btn-default")
+          input(type="file" name="imageFile" class="btn btn-default" accept=".jpg,.png,image/jpg,image/jpeg,image/png")
         div(class="form-group")
           button(type="submit" class="btn btn-primary") 以上の内容で投稿を編集する
       form(method="post", action=`/thread/${threadId}/posts/${post.id}/delete`)
