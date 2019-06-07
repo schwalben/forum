@@ -1,17 +1,17 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var jwt = require( 'jsonwebtoken' );
-var auth = require('../modules/sessionAuthentication');
+const jwt = require( 'jsonwebtoken' );
+const auth = require('../modules/sessionAuthentication');
 
-var fileUploader = require('../modules/fileUploader');
-var upload = fileUploader.upload;
+const fileUploader = require('../modules/fileUploader');
+const upload = fileUploader.upload;
 
-var asociateDefinition = require('../models/asociateDefinition');
-var models = asociateDefinition.models;
-var sequelize = asociateDefinition.sequelize;
-var url = require('url');
-const moment = require('moment-timezone');
+const asociateDefinition = require('../models/asociateDefinition');
+const models = asociateDefinition.models;
+const sequelize = asociateDefinition.sequelize;
+const url = require('url');
+const timeFormatter = require('../modules/timeFormatter');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
@@ -19,8 +19,8 @@ const csrfProtection = csrf({ cookie: true });
 /* GET home page. */
 router.get('/', csrfProtection, function(req, res, next) {
 
-  var parsedUrl = url.parse(req.url, true);
-  var query = parsedUrl.query;
+  const parsedUrl = url.parse(req.url, true);
+  const query = parsedUrl.query;
 
   if (query.searchCondition) {
     models.Thread.findAll({
@@ -34,7 +34,7 @@ router.get('/', csrfProtection, function(req, res, next) {
       ]
     }).then((threads) => {
       threads.forEach((thread) => {
-        thread.formattedCreatedAt = moment(thread.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+        thread.formattedCreatedAt = timeFormatter.toStrJST(thread.createdAt);
       });
 
       res.render('thread', {
@@ -50,7 +50,7 @@ router.get('/', csrfProtection, function(req, res, next) {
       ]
     }).then(threads => {
       threads.forEach((thread) => {
-        thread.formattedCreatedAt = moment(thread.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+        thread.formattedCreatedAt = timeFormatter.toStrJST(thread.createdAt);;
       });
       res.render('thread', {
         threads: threads, 
@@ -61,6 +61,10 @@ router.get('/', csrfProtection, function(req, res, next) {
   }
 });
 
+
+
+
+
 router.get('/new', csrfProtection, function(req, res, next) {
   res.render('newThread', {
     user: req.session.user,
@@ -70,13 +74,13 @@ router.get('/new', csrfProtection, function(req, res, next) {
 
 router.post('/new', upload, csrfProtection, function(req, res, next) {
 
-  var token = req.session.token;
+  const token = req.session.token;
   if (!auth.isValidToken(token)) {
     return res.redirect('/login?from=' + req.originalUrl);
   }
-  var decoded = jwt.decode(token);
+  const decoded = jwt.decode(token);
 
-  var filepath = req.file ? req.file.path.replace('public/', '') : null
+  const filepath = req.file ? req.file.path.replace('public/', '') : null
     
   sequelize.transaction(t => {
     return models.Thread.create({
@@ -92,7 +96,6 @@ router.post('/new', upload, csrfProtection, function(req, res, next) {
     });
   
   }).then(result => {
-    console.log("result");
     res.redirect('/');
   }).catch(err => {
     console.log("err occure");

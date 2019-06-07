@@ -1,33 +1,39 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 
 
-var jwt = require( 'jsonwebtoken' );
-var auth = require('../modules/sessionAuthentication');
+const jwt = require( 'jsonwebtoken' );
+const auth = require('../modules/sessionAuthentication');
 
-var urlParser = require('../modules/urlParser');
+const urlParser = require('../modules/urlParser');
 
-var fileUploader = require('../modules/fileUploader');
-var multer = fileUploader.multer;
-var upload = fileUploader.upload;
+const fileUploader = require('../modules/fileUploader');
+const upload = fileUploader.upload;
 
 
-var asociateDefinition = require('../models/asociateDefinition');
-var models = asociateDefinition.models;
-var url = require('url');
+const asociateDefinition = require('../models/asociateDefinition');
+const models = asociateDefinition.models;
+const sequelize = asociateDefinition.sequelize
+const url = require('url');
 
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
-const moment = require('moment-timezone');
+const timeFormatter = require('../modules/timeFormatter');
+
 
 /* GET home page. */
 router.get('/', csrfProtection, function(req, res, next) {  
-  var threadId = urlParser.getThreadId(req.originalUrl);
+  const threadId = urlParser.getThreadId(req.originalUrl);
+  const sessionUser = req.session.user
+  const userId = sessionUser ? jwt.decode(req.session.token).id : null;
 
-  var sessionUser = req.session.user
-  var userId = sessionUser ? jwt.decode(req.session.token).id : null;
+  sequelize.query('SELECT * FROM "Post" p inner join "Users" u  on p."postedBy" = u."id" WHERE p."id" is not ?',
+    { replacements: [null], type: sequelize.QueryTypes.SELECT }
+  ).then(projects => {
+    console.log(projects)
+  });
 
   models.Post.findAll({
     where: {
@@ -48,91 +54,62 @@ router.get('/', csrfProtection, function(req, res, next) {
   ]
   }).then((posts) => {
     posts.forEach(post => {
-      post.formattedCreatedAt = moment(post.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+      post.formattedCreatedAt = timeFormatter.toStrJST(post.createdAt);
     });
 
-    var token = req.session.token;
-    if (!auth.isValidToken(token)) {
-      res.render('posts', {
+    return res.render('posts', {
         posts: posts,
-        user: req.session.user,
+        user: sessionUser,
         threadId: threadId,
         csrfToken: req.csrfToken()
-      });
-    } else {
-      var decoded = jwt.decode(token);
-      models.User.findOne({where: {id: decoded.id}}).then((user) => {
-        res.render('posts', {
-          posts: posts,
-          user: user,
-          threadId: threadId,
-          csrfToken: req.csrfToken()
-        });
-      });
-    }
+    });
   });
 });
 
 router.get('/search', csrfProtection, function(req, res) {
-  var threadId = urlParser.getThreadId(req.originalUrl);
+  const threadId = urlParser.getThreadId(req.originalUrl);
+  const parsedUrl = url.parse(req.url, true);
+  const query = parsedUrl.query;
 
-  var parsedUrl = url.parse(req.url, true);
-  var query = parsedUrl.query;
-  if (query.searchCondition) {
-    models.Post.findAll({
-      where: {
-        threadId: threadId,
-        content: {
-          $like: '%' + query.searchCondition + '%'
-        }
-      }, 
-      order: [
-        ['createdAt', 'ASC']
-      ],  
-      include: [{
-        model: 
-          models.User, 
-          required: false
-      }]
-    }).then((posts) => {
-      var token = req.session.token;
-  
-      if (!auth.isValidToken(token)) {
-        res.render('posts', {
-          posts: posts,
-          user: req.session.user,
-          threadId: threadId,
-          csrfToken: req.csrfToken(),
-          searchCondition: query.searchCondition
-        });
-      } else {
-        var decoded = jwt.decode(token);
-        models.User.findOne({where: {id: decoded.id}}).then((user) => {
-          res.render('posts', {
-            posts: posts,
-            user: user,
-            threadId: threadId,
-            csrfToken: req.csrfToken(),
-            searchCondition: query.searchCondition
-          });
-        });
+  if (!query.searchCondition) {
+    return res.redirect('./');
+  }
+
+  models.Post.findAll({
+    where: {
+      threadId: threadId,
+      content: {
+        $like: '%' + query.searchCondition + '%'
       }
-    });
-
-  } else {
-    res.redirect('./');
-  };
-
+    }, 
+    order: [
+      ['createdAt', 'ASC']
+    ],  
+    include: [{
+      model: 
+        models.User, 
+        required: false
+    }]
+  }).then((posts) => {
+      return res.render('posts', {
+        posts: posts,
+        user: req.session.user,
+        threadId: threadId,
+        csrfToken: req.csrfToken(),
+        searchCondition: query.searchCondition
+      });
+  });
 
 });
 
 router.get('/export', csrfProtection, function(req, res) {
   
-  var parsedUrl = url.parse(req.url, true);
-  var query = parsedUrl.query;
-  var searchCondition = query.exportCondition;
+  const parsedUrl = url.parse(req.url, true);
+  const query = parsedUrl.query;
+  const searchCondition = query.exportCondition;
 
-  var threadId = urlParser.getThreadId(req.originalUrl);
+  const threadId = urlParser.getThreadId(req.originalUrl);
+
   if (searchCondition) {
     models.Post.findAll({
       where: {
@@ -144,11 +121,9 @@ router.get('/export', csrfProtection, function(req, res) {
       order: [
         ['createdAt', 'ASC']
       ]
-    }).then((posts) => {
-      res.setHeader('Content-disposition', 'attachment; filename=data.json');
-      res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-      res.send(JSON.stringify(posts));  
-    })
+    }).then(post => {
+      return responseJson(res, post);
+    });
   } else {
     models.Post.findAll({
       where: {
@@ -157,22 +132,27 @@ router.get('/export', csrfProtection, function(req, res) {
       order: [
         ['createdAt', 'ASC']
       ]
-    }).then((posts) => {
-      res.setHeader('Content-disposition', 'attachment; filename=data.json');
-      res.setHeader('Content-Type', 'application/json; charset=UTF-8');
-      res.send(JSON.stringify(posts));  
-    })
+    }).then(post => {
+      return responseJson(res, post);
+    });
   }
 });
 
+function responseJson(res, object) {
+  res.setHeader('Content-disposition', 'attachment; filename=data.json');
+  res.setHeader('Content-Type', 'application/json; charset=UTF-8');
+  return res.json(object);  
+}
+
+
 router.get('/:postId/edit', csrfProtection, function(req, res, next) {
 
-  var token = req.session.token;
+  const token = req.session.token;
   if (!auth.isValidToken(token)) {
     return res.redirect('/login?from=' + req.originalUrl);
   }
 
-  var decoded = jwt.decode(token);
+  const decoded = jwt.decode(token);
 
   models.Post.findOne({
     where: {id: req.params.postId}
@@ -195,15 +175,15 @@ router.get('/:postId/edit', csrfProtection, function(req, res, next) {
 });
 
 
-router.post('/:postId/edit',  csrfProtection, function(req, res, next)  {
+router.post('/:postId/edit',  upload, csrfProtection, function(req, res, next)  {
   
-  var token = req.session.token;
+  const token = req.session.token;
   if (!auth.isValidToken(token)) {
     return res.redirect('/login?from=' + req.originalUrl);
   }
 
 
-  var decoded = jwt.decode(token);
+  const decoded = jwt.decode(token);
   models.Post.findOne(
     {where: {id: req.params.postId}
   }).then(post => {
@@ -213,11 +193,29 @@ router.post('/:postId/edit',  csrfProtection, function(req, res, next)  {
       return next(err);
     }
 
-    models.Post.update({
-      content: req.body.content,
-      updatedAt: new Date()
-    }, {where: {id: req.params.postId}});
-    res.redirect('../');
+    const filepath = req.file ? req.file.path.replace('public/', '') : null
+
+    if (filepath) {
+      models.Post.update({
+        content: req.body.content,
+        updatedAt: new Date(),
+        filePath: filepath
+      }, {
+        where: {id: req.params.postId}
+      }).then(result => {
+        return res.redirect('../');
+      });
+
+    } else {
+      models.Post.update({
+        content: req.body.content,
+        updatedAt: new Date()
+      }, {
+        where: {id: req.params.postId}
+      }).then(result => {
+        return res.redirect('../');
+      });
+    }
   });
 
   
@@ -225,11 +223,11 @@ router.post('/:postId/edit',  csrfProtection, function(req, res, next)  {
 
 router.post('/:postId/delete', csrfProtection, function(req, res, next) {
   
-  var token = req.session.token;
+  const token = req.session.token;
   if (!auth.isValidToken(token)) {
     return res.redirect('/login?from=' + req.originalUrl);
   }
-  var decoded = jwt.decode(token);
+  const decoded = jwt.decode(token);
   
   models.Post.findOne({
     where: {id: req.params.postId}
@@ -238,7 +236,7 @@ router.post('/:postId/delete', csrfProtection, function(req, res, next) {
       models.Post.destroy({
         where: {id: post.id}
       });
-      res.redirect('../');
+      return res.redirect('../');
     } else {
       const err = new Error('指定された投稿がない、あるいは、削除する権限がありません');
       err.status = 404;
@@ -250,16 +248,14 @@ router.post('/:postId/delete', csrfProtection, function(req, res, next) {
 
 router.post('/',  upload, csrfProtection, function(req, res, next) {
   
-
-
-    var token = req.session.token;
+    const token = req.session.token;
     if (!auth.isValidToken(token)) {
       return res.redirect('/login?from=' + req.originalUrl);
     }
-    var decoded = jwt.decode(token);
+    const decoded = jwt.decode(token);
   
-    var filepath = req.file ? req.file.path.replace('public/', '') : null
-  
+    const filepath = req.file ? req.file.path.replace('public/', '') : null
+
     models.Post.create({
       content: req.body.content,
       postedBy: decoded.id,
@@ -267,7 +263,7 @@ router.post('/',  upload, csrfProtection, function(req, res, next) {
       filePath: filepath
     });
     
-    res.redirect(req.originalUrl);
+    return res.redirect(req.originalUrl);
 
 
 

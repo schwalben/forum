@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var asociateDefinition = require('../models/asociateDefinition');
-var models = asociateDefinition.models;
-var Hash = require('../modules/passwordHash');
-var loginJWT = require('../modules/loginJWT');
+const express = require('express');
+const router = express.Router();
+const asociateDefinition = require('../models/asociateDefinition');
+const models = asociateDefinition.models;
+const Hash = require('../modules/passwordHash');
+const loginJWT = require('../modules/loginJWT');
 
 
 
@@ -13,12 +13,14 @@ router.get('/', function(req, res, next) {
   const from = req.query.from;
   if(req.session.user) {
     res.redirect(from ? from  : '/threads');
-  } else {
-    if (from) {
-        res.cookie('loginFrom', from, {expires: new Date(Date.now() + 600000)});
-    }
-    res.render('login');
+  } 
+
+  if (from) {
+      res.cookie('loginFrom', from, {expires: new Date(Date.now() + 600000)});
   }
+
+  return res.render('login');
+
 });
 
 
@@ -33,7 +35,7 @@ router.post('/', function(req, res, next) {
       if (!user) {
         return loginFailed(res);
       }
-      var hashedInputPassword = Hash.stretchingPassword(req.body.password, user.salt);
+      const hashedInputPassword = Hash.stretchingPassword(req.body.password, user.salt);
       return user.password === hashedInputPassword ? loginSucceeded(req, res, {id: user.id, name: user.name}) : loginFailed(res);
     });
 });
@@ -44,11 +46,11 @@ function loginFailed(res) {
 }
 
 function loginSucceeded(req, res, user) {
-  var token = loginJWT.createLoginedToken(user);
+  const token = loginJWT.createLoginedToken(user);
   req.session.token = token;
   req.session.user = {id: user.id, name: user.name};
 
-  var loginFrom = req.cookies.loginFrom;
+  const loginFrom = req.cookies.loginFrom;
   if (loginFrom &&
     !loginFrom.includes('http://') &&
     !loginFrom.includes('https://')) {

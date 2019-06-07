@@ -1,10 +1,10 @@
-var crypto = require('crypto');
+const crypto = require('crypto');
 // BCryptがBetter？
-var algorithm = 'sha512';
+const algorithm = 'sha512';
 
 
 function toHash(str) {
-    var hash = crypto.createHash(algorithm);
+    const hash = crypto.createHash(algorithm);
     hash.update(str);
     return hash.digest('hex');
 }
@@ -18,10 +18,10 @@ function genSalt(length) {
 
 
 function stretchingPassword(password, salt) {
-    var stretchingNum = 100;    
-    var saltPassword = salt + password;
+    const stretchingNum = 100;    
+    const saltPassword = salt + password;
     
-    for (var i = 0; i < stretchingNum; i++) {
+    for (const i = 0; i < stretchingNum; i++) {
         saltPassword = toHash(saltPassword)    ;
     }
     

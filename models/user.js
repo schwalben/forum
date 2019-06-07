@@ -8,10 +8,20 @@ const Users = loader.database.define('Users', {
       primaryKey: true
     },
     name: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      validate: {
+        notNull: true,
+        notEmpty: true,
+        len: [1,255]
+      }
     },
     password: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      validate: {
+        notNull: true,
+        notEmpty: true,
+        len: [8,255]
+      }
     },
     trackingCookie: {
       type: Sequelize.STRING

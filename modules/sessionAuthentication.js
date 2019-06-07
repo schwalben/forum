@@ -1,4 +1,4 @@
-var jwt = require( 'jsonwebtoken' );
+const jwt = require( 'jsonwebtoken' );
 
 
 function isValidToken(token) {
@@ -15,7 +15,17 @@ function isValidToken(token) {
     return true;
 }
 
+function isValidUser(userId, token) {
+
+    if (!isValidToken(token)) {
+        return false;
+    }
+
+    const tokenUserId = jwt.decode(token).id;
+    return userId === tokenUserId;
+}
 
 
 
-module.exports = {isValidToken};
+
+module.exports = {isValidToken, isValidUser};

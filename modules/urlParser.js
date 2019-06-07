@@ -1,7 +1,7 @@
 const url = require('url');
 
 function getThreadId(originalUrl) {
-    var parsedUrl = originalUrl.split('/');
+    const parsedUrl = originalUrl.split('/');
 
     if (parsedUrl.length < 3 || parsedUrl[1] != 'thread') {
         return '';

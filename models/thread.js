@@ -9,7 +9,11 @@ const Thread = loader.database.define('Thread', {
       primaryKey: true
     },
     title: {
-      type: Sequelize.TEXT
+      type: Sequelize.TEXT,
+      validate: {
+        notEmpty: true,
+        len: [1,255]
+      }
     },
     createdBy: {
       type: Sequelize.STRING

@@ -14,6 +14,10 @@ html
         a(class="navbar-brand" href="/") forum practice
       div(class="container-fluid")
         ul(class="nav navbar-nav navbar-right")
+          li
+            a(href=`/`) Home
+          li
+            a(href=`/about`) About
           if user
             li 
               a(href=`/favorites/users/${user.id}`) #{user.name}

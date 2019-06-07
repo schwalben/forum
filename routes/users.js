@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var asociateDefinition = require('../models/asociateDefinition');
-var models = asociateDefinition.models;
-var Hash = require('../modules/passwordHash');
+const express = require('express');
+const router = express.Router();
+const asociateDefinition = require('../models/asociateDefinition');
+const models = asociateDefinition.models;
+const Hash = require('../modules/passwordHash');
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -17,8 +17,8 @@ router.get('/register', function(req, res, next) {
 
 router.post('/register', function(req, res, next) {
 
-  var salt = Hash.genSalt(20);
-  var hashedInputPassword = Hash.stretchingPassword(req.body.password, salt);
+  const salt = Hash.genSalt(20);
+  const hashedInputPassword = Hash.stretchingPassword(req.body.password, salt);
   models.User.create({
     id: req.body.id,
     name: req.body.name,

@@ -1,5 +1,5 @@
-var createError = require('http-errors');
-var express = require('express');
+const createError = require('http-errors');
+const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
@@ -13,9 +13,9 @@ const postsRouter = require('./routes/posts');
 const threadRouter = require('./routes/threads');
 const logoutRouter = require('./routes/logout');
 const favoriteRouter = require('./routes/favorites');
+const aboutRouter = require('./routes/about');
 
-
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -51,7 +51,7 @@ app.use('/logout', logoutRouter);
 app.use('/threads', threadRouter);
 app.use('/thread/:threadId', postsRouter);
 app.use('/favorites', favoriteRouter);
-
+app.use('/about', aboutRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

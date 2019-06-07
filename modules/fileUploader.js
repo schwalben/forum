@@ -1,9 +1,9 @@
-var crypto = require('crypto');
-var algorithm = 'md5';
+const crypto = require('crypto');
+const algorithm = 'md5';
 
-var maxSize = 1000000;
-var multer  = require('multer');
-var storage = multer.diskStorage({
+const maxSize = 5000000;
+const multer  = require('multer');
+const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, './public/images/');
   },
@@ -12,7 +12,7 @@ var storage = multer.diskStorage({
     cb(null, createUniqueName(file.originalname, file.mimetype.split('/')[1]));
   }
 });
-var upload = multer({ 
+const upload = multer({ 
     storage: storage, 
     fileFilter: function (req, file, cb) {
       cb(null, isImageFileExtension(file.mimetype));
@@ -28,10 +28,10 @@ var upload = multer({
 
 function createUniqueName(originalname, fileExtension) {
 
-    var hash = crypto.createHash(algorithm);
+    const hash = crypto.createHash(algorithm);
     hash.update(originalname + Math.random() + Date.now());
 
-    var hashedFileName = hash.digest('hex') + '.' + fileExtension;
+    const hashedFileName = hash.digest('hex') + '.' + fileExtension;
     if (existFileName(hashedFileName)) {
         hashedFileName = createUniqueName(originalname, fileExtension);
     }

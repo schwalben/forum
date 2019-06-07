@@ -11,7 +11,11 @@ const Post = loader.database.define('Post', {
     primaryKey: true
   },
   content: {
-    type: Sequelize.TEXT
+    type: Sequelize.TEXT, 
+    validate: {
+      notEmpty: true,
+      len: [1,255]
+    }
   },
   postedBy: {
     type: Sequelize.STRING

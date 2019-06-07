@@ -1,15 +1,14 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
-var jwt = require( 'jsonwebtoken' );
-var auth = require('../modules/sessionAuthentication');
-
-var urlParser = require('../modules/urlParser');
+const jwt = require( 'jsonwebtoken' );
+const auth = require('../modules/sessionAuthentication');
 
 
-var asociateDefinition = require('../models/asociateDefinition');
-var models = asociateDefinition.models;
-var url = require('url');
+
+
+const asociateDefinition = require('../models/asociateDefinition');
+const models = asociateDefinition.models;
 
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
@@ -24,14 +23,14 @@ const moment = require('moment-timezone');
 /* GET home page. */
 router.get('/users/:userId', function(req, res, next) {  
 
-  var sessionUser = req.session.user
-  var userId = sessionUser ? jwt.decode(req.session.token).id : null;
+  const sessionUser = req.session.user
+  const userId = sessionUser ? jwt.decode(req.session.token).id : null;
 
   if (userId != sessionUser.id) {
       return res.redirect('/logout');
   }
 
-  var paramUserId = req.params.userId;
+  const paramUserId = req.params.userId;
   if (paramUserId != userId) {
     const err = new Error('覗きは禁止。');
     err.status = 403;
@@ -71,13 +70,13 @@ router.get('/users/:userId', function(req, res, next) {
 
 router.post('/users/:userId/posts/:postId/resister', function(req, res, next) {  
 
-  var token = req.session.token;
+  const token = req.session.token;
   if (!auth.isValidToken(token)) {
     return res.redirect('/login?from=' + req.originalUrl);
   }  
 
-  var userId = jwt.decode(token).id;
-  var postId = req.params.postId;
+  const userId = jwt.decode(token).id;
+  const postId = req.params.postId;
 
 
   models.Favorite.create({
@@ -91,13 +90,13 @@ router.post('/users/:userId/posts/:postId/resister', function(req, res, next) {
 
 router.post('/users/:userId/posts/:postId/cancel', function(req, res, next) {
   
-  var token = req.session.token;
+  const token = req.session.token;
   if (!auth.isValidToken(token)) {
     return res.redirect('/login?from=' + req.originalUrl);
   }  
 
-  var userId = jwt.decode(token).id;
-  var postId = req.params.postId;
+  const userId = jwt.decode(token).id;
+  const postId = req.params.postId;
 
   models.Favorite.destroy({
     where: {

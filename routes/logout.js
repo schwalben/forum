@@ -1,12 +1,10 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     
-    req.session.destroy(function(err) {
-        // cannot access session here
-    });    
+    req.session.destroy(function(err) {});
 
     res.render('login', {message: 'ログアウトしました'});
 });
