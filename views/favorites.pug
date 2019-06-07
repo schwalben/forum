@@ -7,11 +7,11 @@ block content
     ul(class="list-group")
       each favorite, index in favorites
         li(class="list-group-item")
-          a(href=`/thread/${favorite.Post.threadId}` class="list-group-item") 
+          a(href=`/thread/${favorite.Post.threadId}/posts` class="list-group-item") 
             p 作成日時: #{favorite.Post.Thread.formattedCreatedAt} 
             font(size="5") #{favorite.Post.Thread.title}
           if user && favorite.Post.postedBy === user.id
-            a(href=`/thread/${favorite.Post.threadId}/${favorite.Post.id}/edit`) 編集  
+            a(href=`/thread/${favorite.Post.threadId}/posts/${favorite.Post.id}/edit`) 編集  
           button(class=`favorite-button btn-success`
             data-user-id=`${user.id}`
             data-post-id=`${favorite.Post.id}`) favorite

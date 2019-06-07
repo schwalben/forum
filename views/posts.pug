@@ -6,7 +6,7 @@ block content
     div(class="panel panel-default")
       div(class="panel-heading") 新規投稿
       div(class="panel-body") 
-        form(method="post" action=`/thread/${threadId}`, enctype="multipart/form-data")
+        form(method="post" action=`/thread/${threadId}/posts`, enctype="multipart/form-data")
           input(type="hidden" name="_csrf" value!=csrfToken)
           div(class="form-group")
             textarea(name="content" class="form-control" placeholder="投稿内容" required)
@@ -16,14 +16,14 @@ block content
             button(type="submit" class="btn btn-primary") 投稿
 
   - var _searchCondition = searchCondition ? searchCondition : '';
-  form(method="get" action=`/thread/${threadId}/search` class="form-inline")
+  form(method="get" action=`/thread/${threadId}/posts/search` class="form-inline")
     div(class="form-group")
       input(type="text" name="searchCondition" class="form-control" placeholder="部分一致" value=`${_searchCondition}`)
       button(type="submit" class="btn btn-default") 絞り込み
 
 
 
-  form(method="get" action=`/thread/${threadId}/export` class="form-inline")
+  form(method="get" action=`/thread/${threadId}/posts/export` class="form-inline")
     input(type="hidden" name="exportCondition" value=`${_searchCondition}`)
     button(type="submit" class="btn btn-default" onclick="getLocation()" ) エクスポート
 
@@ -34,7 +34,7 @@ block content
         li(class="list-group-item")
           //- pugに名前が変わった際にパラメータを埋め込む際の書き方が変わった
           if user && post.postedBy === user.id
-            a(href=`/thread/${threadId}/${post.id}/edit`) 編集  
+            a(href=`/thread/${threadId}/posts/${post.id}/edit`) 編集  
           if user
             -var btnColor = post.Favorites.length > 0 ? 'btn-success' : 'btn-default'
             button(class=`favorite-button ${btnColor}`

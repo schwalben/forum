@@ -49,7 +49,7 @@ app.use('/users', usersRouter);
 app.use('/login', loginRouter);
 app.use('/logout', logoutRouter);
 app.use('/threads', threadRouter);
-app.use('/thread/:threadId', postsRouter);
+app.use('/thread/:threadId/posts', postsRouter);
 app.use('/favorites', favoriteRouter);
 app.use('/about', aboutRouter);
 

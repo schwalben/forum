@@ -19,9 +19,9 @@ function genSalt(length) {
 
 function stretchingPassword(password, salt) {
     const stretchingNum = 100;    
-    const saltPassword = salt + password;
+    var saltPassword = salt + password;
     
-    for (const i = 0; i < stretchingNum; i++) {
+    for (var i = 0; i < stretchingNum; i++) {
         saltPassword = toHash(saltPassword)    ;
     }
     

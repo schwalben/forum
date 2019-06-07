@@ -5,7 +5,7 @@ block content
   div(class="panel panel-default")
     div(class="panel-heading") 投稿内容の編集
     div(class="panel-body") 
-      form(method="post" action=`/thread/${threadId}/${post.id}/edit` enctype="multipart/form-data")
+      form(method="post" action=`/thread/${threadId}/posts/${post.id}/edit` enctype="multipart/form-data")
         input(type="hidden" name="_csrf" value!=csrfToken)
         div(class="form-group")
           textarea(name="content" class="form-control" required) #{post.content}
@@ -13,7 +13,7 @@ block content
           input(type="file" name="imageFile" class="btn btn-default")
         div(class="form-group")
           button(type="submit" class="btn btn-primary") 以上の内容で投稿を編集する
-      form(method="post", action=`/thread/${threadId}/${post.id}/delete`)
+      form(method="post", action=`/thread/${threadId}/posts/${post.id}/delete`)
         input(type="hidden" name="_csrf" value!=csrfToken)
         button(class="btn btn-danger" type="submit") この投稿を削除する
 

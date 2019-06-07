@@ -17,7 +17,7 @@ block content
     div(class="panel-heading") スレッド一覧
     div(class="list-group")
       each thread in threads
-        a(href=`/thread/${thread.threadId}` class="list-group-item") 
+        a(href=`/thread/${thread.threadId}/posts` class="list-group-item") 
           p 作成日時: #{thread.formattedCreatedAt}
           font(size="5") #{thread.title}
             
