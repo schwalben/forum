@@ -23,6 +23,25 @@ const csrfProtection = csrf({ cookie: true });
 const timeFormatter = require('../modules/timeFormatter');
 
 
+router.post('/*', function(req, res, next) {  
+  const token = req.session.token;
+  if (!auth.isValidToken(token)) {
+    return res.redirect('/login?from=' + req.originalUrl);
+  }
+  next();
+});
+
+router.get('/:postId/edit', function(req, res, next) {
+  const token = req.session.token;
+  if (!auth.isValidToken(token)) {
+    return res.redirect('/login?from=' + req.originalUrl);
+  }
+  next();
+});
+
+
+
+
 /* GET home page. */
 router.get('/', csrfProtection, function(req, res, next) {  
   const threadId = urlParser.getThreadId(req.originalUrl);
@@ -177,13 +196,7 @@ router.get('/:postId/edit', csrfProtection, function(req, res, next) {
 
 router.post('/:postId/edit',  upload, csrfProtection, function(req, res, next)  {
   
-  const token = req.session.token;
-  if (!auth.isValidToken(token)) {
-    return res.redirect('/login?from=' + req.originalUrl);
-  }
-
-
-  const decoded = jwt.decode(token);
+  const decoded = jwt.decode(req.session.token);
   models.Post.findOne(
     {where: {id: req.params.postId}
   }).then(post => {
@@ -223,11 +236,7 @@ router.post('/:postId/edit',  upload, csrfProtection, function(req, res, next)  
 
 router.post('/:postId/delete', csrfProtection, function(req, res, next) {
   
-  const token = req.session.token;
-  if (!auth.isValidToken(token)) {
-    return res.redirect('/login?from=' + req.originalUrl);
-  }
-  const decoded = jwt.decode(token);
+  const decoded = jwt.decode(req.session.token);
   
   models.Post.findOne({
     where: {id: req.params.postId}
@@ -248,22 +257,18 @@ router.post('/:postId/delete', csrfProtection, function(req, res, next) {
 
 router.post('/',  upload, csrfProtection, function(req, res, next) {
   
-    const token = req.session.token;
-    if (!auth.isValidToken(token)) {
-      return res.redirect('/login?from=' + req.originalUrl);
-    }
-    const decoded = jwt.decode(token);
-  
-    const filepath = req.file ? req.file.path.replace('public/', '') : null
 
-    models.Post.create({
-      content: req.body.content,
-      postedBy: decoded.id,
-      threadId: urlParser.getThreadId(req.originalUrl),
-      filePath: filepath
-    });
-    
-    return res.redirect(req.originalUrl);
+  const decoded = jwt.decode(req.session.token);
+  const filepath = req.file ? req.file.path.replace('public/', '') : null
+
+  models.Post.create({
+    content: req.body.content,
+    postedBy: decoded.id,
+    threadId: urlParser.getThreadId(req.originalUrl),
+    filePath: filepath
+  });
+  
+  return res.redirect(req.originalUrl);
 
 
 

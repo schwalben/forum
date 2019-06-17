@@ -55,7 +55,13 @@ app.use('/about', aboutRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  // next(createError(404));
+  const err = createError(404);
+  res.render('error', {
+    message: err.message,
+    error: {},
+    user: req.session.user
+  });
 });
 
 // development error handler
