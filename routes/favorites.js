@@ -9,6 +9,7 @@ const auth = require('../modules/sessionAuthentication');
 
 const asociateDefinition = require('../models/asociateDefinition');
 const models = asociateDefinition.models;
+const sequelize = asociateDefinition.sequelize;
 
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
@@ -40,9 +41,13 @@ router.get('/users/:userId', function(req, res, next) {
 
 
   models.Favorite.findAll({
+    attributes: [
+      [sequelize.literal('ROW_NUMBER() OVER(PARTITION BY "Post"."threadId" ORDER BY "Post"."createdAt")'), 'rowNum']
+    ],
     where: {userId: userId},
     order: [
-      ['createdAt', 'DESC']
+      [models.Post, 'threadId', 'DESC'],
+      [models.Post, 'createdAt', 'ASC']
     ], include: [{
       model: models.Post,
       required: true, 
@@ -56,15 +61,14 @@ router.get('/users/:userId', function(req, res, next) {
     }]
   }).then((favorites) => {
     favorites.forEach(favorite => {
-      favorite.Post.formattedCreatedAt = moment(favorite.Post.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
-      favorite.Post.Thread.formattedCreatedAt = moment(favorite.Post.Thread.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
-    });
-    res.render('favorites', {
+    favorite.Post.formattedCreatedAt = moment(favorite.Post.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+    favorite.Post.Thread.formattedCreatedAt = moment(favorite.Post.Thread.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+  });
+    return res.render('favorites', {
       favorites: favorites,
       user: sessionUser
-      });
+    });
   });
-
 });
 
 

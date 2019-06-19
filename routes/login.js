@@ -6,13 +6,13 @@ const Hash = require('../modules/passwordHash');
 const loginJWT = require('../modules/loginJWT');
 
 
-
 /* GET users listing. */
 router.get('/', function(req, res, next) {
 
+
   const from = req.query.from;
   if(req.session.user) {
-    res.redirect(from ? from  : '/threads');
+    return res.redirect(from ? from  : '/threads');
   } 
 
   if (from) {
@@ -26,6 +26,10 @@ router.get('/', function(req, res, next) {
 
 // 第一引数は、app.jsで定義したものが規定になる
 router.post('/', function(req, res, next) {
+
+  if(req.session.user) {
+    return res.redirect('/threads');
+  }
 
   // postの場合、res.body内に贈られた値が入っている。
   // 試してみたが、 ' or 1=1'みたいな入力値はエスケープしてくれる

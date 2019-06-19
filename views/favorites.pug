@@ -7,14 +7,15 @@ block content
     ul(class="list-group")
       each favorite, index in favorites
         li(class="list-group-item")
-          a(href=`/thread/${favorite.Post.threadId}/posts` class="list-group-item") 
-            p 作成日時: #{favorite.Post.Thread.formattedCreatedAt} 
-            font(size="5") #{favorite.Post.Thread.title}
-          if user && favorite.Post.postedBy === user.id
-            a(href=`/thread/${favorite.Post.threadId}/posts/${favorite.Post.id}/edit`) 編集  
+          if favorite.dataValues['rowNum'] == 1
+            a(href=`/thread/${favorite.Post.threadId}/posts` class="list-group-item") 
+              p 作成日時: #{favorite.Post.Thread.formattedCreatedAt} 
+              font(size="5") #{favorite.Post.Thread.title}
           button(class=`favorite-button btn-success`
             data-user-id=`${user.id}`
             data-post-id=`${favorite.Post.id}`) favorite
+          if user && favorite.Post.postedBy === user.id
+            a(href=`/thread/${favorite.Post.threadId}/posts/${favorite.Post.id}/edit`)   編集  
           p Posted by #{favorite.Post.User.name}  #{favorite.Post.formattedCreatedAt}
           p #{favorite.Post.content}
           if favorite.Post.filePath

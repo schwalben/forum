@@ -32,14 +32,14 @@ block content
     ul(class="list-group")
       each post, index in posts
         li(class="list-group-item")
-          //- pugに名前が変わった際にパラメータを埋め込む際の書き方が変わった
-          if user && post.postedBy === user.id
-            a(href=`/thread/${threadId}/posts/${post.id}/edit`) 編集  
           if user
             -var btnColor = post.Favorites.length > 0 ? 'btn-success' : 'btn-default'
             button(class=`favorite-button ${btnColor}`
               data-user-id=`${user.id}`
               data-post-id=`${post.id}`) favorite
+          //- pugに名前が変わった際にパラメータを埋め込む際の書き方が変わった
+          if user && post.postedBy === user.id
+            a(href=`/thread/${threadId}/posts/${post.id}/edit`)   編集  
           p #{index + 1} : Posted by #{post.User.name}  #{post.formattedCreatedAt}
           p #{post.content}
           if post.filePath
