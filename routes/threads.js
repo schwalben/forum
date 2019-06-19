@@ -51,7 +51,6 @@ router.get('/', csrfProtection, function(req, res, next) {
     }).then(threads => {
       
       threads.forEach((thread) => {
-        console.log(thread);
         thread.formattedCreatedAt = timeFormatter.toStrJST(thread.createdAt);;
       });
       res.render('thread', {

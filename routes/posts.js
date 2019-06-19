@@ -241,17 +241,33 @@ router.post('/:postId/delete', csrfProtection, function(req, res, next) {
   models.Post.findOne({
     where: {id: req.params.postId}
   }).then((post) => {
-    if (isMine(post.postedBy, decoded.id)) {
-      models.Post.destroy({
-        where: {id: post.id}
-      });
-      return res.redirect('../');
-    } else {
+
+    if (!isMine(post.postedBy, decoded.id)) {
       const err = new Error('指定された投稿がない、あるいは、削除する権限がありません');
-      err.status = 404;
+      err.status = 403;
       return next(err);
-    }
+    } 
+    sequelize.transaction(t => {
+      return models.Favorite.destroy({
+        where: {
+          userId: decoded.id, 
+          postId: post.id
+      }
+    }, {transaction: t}).then(result => {
+        return models.Post.destroy({
+          where: {id: post.id}
+        }, {transaction: t});
+      });
+    }).then(result => {
+      return res.redirect('../');
+    }).catch(err => {
+      console.log("err occure");
+      next(err);
+    });    
   });
+    
+
+
 });
 
 
