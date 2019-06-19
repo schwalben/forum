@@ -17,7 +17,8 @@ block content
           if user && favorite.Post.postedBy === user.id
             a(href=`/thread/${favorite.Post.threadId}/posts/${favorite.Post.id}/edit`)   編集  
           p Posted by #{favorite.Post.User.name}  #{favorite.Post.formattedCreatedAt}
-          p #{favorite.Post.content}
+          each line in favorite.Post.lines
+            p #{line}
           if favorite.Post.filePath
             a(href=`/${favorite.Post.filePath}`) 
               img(src=`/${favorite.Post.filePath}` class="img-responsive" alt="")

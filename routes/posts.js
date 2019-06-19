@@ -68,6 +68,8 @@ router.get('/', csrfProtection, function(req, res, next) {
   }).then((posts) => {
     posts.forEach(post => {
       post.formattedCreatedAt = timeFormatter.toStrJST(post.createdAt);
+      // Pugの機能でエスケープしたいため、行ごとに配列にしてしまう
+      post.lines = post.content ? post.content.split(/\r\n|\r|\n/) : [''];
     });
 
     return res.render('posts', {

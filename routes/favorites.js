@@ -63,6 +63,7 @@ router.get('/users/:userId', function(req, res, next) {
     favorites.forEach(favorite => {
     favorite.Post.formattedCreatedAt = moment(favorite.Post.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
     favorite.Post.Thread.formattedCreatedAt = moment(favorite.Post.Thread.createdAt).tz('Asia/Tokyo').format('YYYY/MM/DD HH:mm:ss');
+    favorite.Post.lines = favorite.Post.content ? favorite.Post.content.split(/\r\n|\r|\n/) : [''];
   });
     return res.render('favorites', {
       favorites: favorites,

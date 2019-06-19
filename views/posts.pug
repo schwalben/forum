@@ -41,7 +41,8 @@ block content
           if user && post.postedBy === user.id
             a(href=`/thread/${threadId}/posts/${post.id}/edit`)   編集  
           p #{index + 1} : Posted by #{post.User.name}  #{post.formattedCreatedAt}
-          p #{post.content}
+          each line in post.lines
+            p #{line}
           if post.filePath
             a(href=`/${post.filePath}`) 
               img(src=`/${post.filePath}` class="img-responsive" alt="")
