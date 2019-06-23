@@ -252,7 +252,6 @@ router.post('/:postId/delete', csrfProtection, function(req, res, next) {
     sequelize.transaction(t => {
       return models.Favorite.destroy({
         where: {
-          userId: decoded.id, 
           postId: post.id
       }
     }, {transaction: t}).then(result => {

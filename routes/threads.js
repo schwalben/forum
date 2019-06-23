@@ -106,6 +106,39 @@ router.post('/new', upload, csrfProtection, function(req, res, next) {
 });
 
 
+function deleteThreads(title) {
+
+  models.Thread.findAll({
+    where: {
+      title: title
+    }
+  }).then(threads => {
+    threads.forEach(thread => {
+      const promisePostsDestroy = models.Post.findAll({
+        where: { threadId: thread.threadId }
+      }).then(posts => {
+        Promise.all(posts.map((p) => { return p.destroy(); }));
+        thread.destroy()
+      })
+    })
+  })
+}
+router.deleteThreads = deleteThreads;
+
+function deleteThread(threadId) {
+  const promisePostsDestroy = models.Post.findAll({
+    where: { threadId: threadId }
+  }).then(posts => {
+    Promise.all(posts.map((p) => { return p.destroy(); }));
+    models.Thread.findOne({
+      where: { threadId: threadId }
+    }).then(thread => {
+      thread.destroy();
+    })
+  })
+}
+router.deleteThread = deleteThread;
+
 
 
 
