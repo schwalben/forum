@@ -1,6 +1,5 @@
 const loader = require('./sequelize-loader');
 const Sequelize = loader.Sequelize;
-const Post = require('./post');
 
 const Users = loader.database.define('Users', {
     id: {
@@ -10,7 +9,6 @@ const Users = loader.database.define('Users', {
     name: {
       type: Sequelize.STRING,
       validate: {
-        notNull: true,
         notEmpty: true,
         len: [1,255]
       }
@@ -18,7 +16,6 @@ const Users = loader.database.define('Users', {
     password: {
       type: Sequelize.STRING,
       validate: {
-        notNull: true,
         notEmpty: true,
         len: [8,255]
       }
