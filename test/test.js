@@ -107,6 +107,7 @@ describe('thread', () => {
         let csrfToken = extractCsrfToken(res);
         req
           .post('/threads/new')
+          // 複数のCookieをSETする場合はセミコロン区切りの文字列として渡す
           .set('Cookie', [csrf + ';' + forumCookie])
           .send({title: title, content: content, _csrf: csrfToken})
           .expect('Location', '/')
